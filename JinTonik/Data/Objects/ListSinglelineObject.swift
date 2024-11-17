@@ -1,21 +1,25 @@
 import CoreData
 
-class ListSinglelineObject: ResumeField {
-    override class var keyPath: String { "" }
+@objc(ListSinglelineObject)
+class ListSinglelineObject: NSManagedObject, ResumeField {
     @NSManaged var objects: Set<SinglelineObject>
-    var commonField: String { "" }
+    @NSManaged var categoryName: String
+    var category: MainCategory {
+        MainCategory(rawValue: categoryName)!
+    }
     
-    convenience init(_ managedContext: NSManagedObjectContext) {
+    convenience init(category: MainCategory, managedContext: NSManagedObjectContext) {
         self.init(context: managedContext)
+        self.categoryName = category.rawValue
     }
     
-    override var valuesToDisplay: [String] {
-        let names = objects.map { $0.name }
+    var valuesToDisplay: [String] {
+        let names = objects.map { $0.name }.filter { !$0.isEmpty }
         
-        return names.isEmpty ? [commonField] : names
+        return names.isEmpty ? category.commonFields : names
     }
     
-    override var isFilled: Bool {
+    var isFilled: Bool {
         !objects.isEmpty
     }
 }
@@ -23,12 +27,14 @@ class ListSinglelineObject: ResumeField {
 class SinglelineObject: NSManagedObject, Identifiable {
     @NSManaged var name: String
     @NSManaged var mark: String
+    @NSManaged var timestamp: Date
     @NSManaged var list: ListSinglelineObject
     
     convenience init(name: String = "", mark: String = "0", list: ListSinglelineObject, managedContext: NSManagedObjectContext) {
         self.init(context: managedContext)
         self.name = name
         self.mark = mark
+        self.timestamp = Date()
         self.list = list
     }
     
@@ -36,6 +42,8 @@ class SinglelineObject: NSManagedObject, Identifiable {
         self.init(context: context)
         self.name = tempObject.name
         self.mark = tempObject.mark
+        self.timestamp = Date()
+        self.list = tempObject.list
         tempObject.list.objects.insert(self)
     }
     

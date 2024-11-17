@@ -1,26 +1,40 @@
 import CoreData
 
-class ListMultilineObject: ResumeField {
-    override class var keyPath: String { "" }
+@objc(ListMultilineObject)
+class ListMultilineObject: NSManagedObject, ResumeField {
     @NSManaged var objects: Set<MultilineObject>
-    var commonFields: [String] { [String]() }
-    
-    convenience init(_ managedContext: NSManagedObjectContext) {
-        self.init(context: managedContext)
+    @NSManaged var categoryName: String
+    var category: MainCategory {
+        MainCategory(rawValue: categoryName)!
     }
     
-    override var valuesToDisplay: [String] {
-        let valuesToShow: [String]
-        if let object = objects.first {
-            valuesToShow = [object.title, object.specialisation, object.period]
+    convenience init(category: MainCategory, context: NSManagedObjectContext) {
+        self.init(context: context)
+        self.categoryName = category.rawValue
+    }
+    
+    var valuesToDisplay: [String] {
+        var valuesToShow: [String] = []
+        if let object = objects.first(where: { !$0.title.isEmpty || !$0.specialisation.isEmpty }) {
+            if !object.title.isEmpty {
+                valuesToShow.append(object.title)
+            }
+            
+            if !object.specialisation.isEmpty {
+                valuesToShow.append(object.specialisation)
+            }
+            
+            if !object.period.isEmpty {
+                valuesToShow.append(object.period)
+            }
         } else {
-            valuesToShow = commonFields
+            valuesToShow = category.commonFields
         }
         
         return valuesToShow
     }
     
-    override var isFilled: Bool {
+    var isFilled: Bool {
         !objects.isEmpty
     }
 }
@@ -32,6 +46,7 @@ class MultilineObject: NSManagedObject, Identifiable {
     @NSManaged var location: String
     @NSManaged var about: String
     @NSManaged var present: Bool
+    @NSManaged var timestamp: Date
     @NSManaged var list: ListMultilineObject
     
     convenience init(title: String = "", specialisation: String = "", period: String = "", location: String = "", about: String = "", present: Bool = false, list: ListMultilineObject, managedContext: NSManagedObjectContext) {
@@ -42,6 +57,7 @@ class MultilineObject: NSManagedObject, Identifiable {
         self.location = location
         self.about = about
         self.present = present
+        self.timestamp = Date()
         self.list = list
     }
     
@@ -53,6 +69,8 @@ class MultilineObject: NSManagedObject, Identifiable {
         self.location = object.location
         self.about = object.about
         self.present = object.present
+        self.timestamp = Date()
+        self.list = object.list
         object.list.objects.insert(self)
     }
     

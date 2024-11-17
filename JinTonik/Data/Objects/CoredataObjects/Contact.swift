@@ -1,12 +1,12 @@
 import Foundation
 import CoreData
 
-final class Contact: ResumeField {
-    override class var keyPath: String { "contact" }
+final class Contact: NSManagedObject, ResumeField {
     @NSManaged var resume: Resume
     @NSManaged var email: String
     @NSManaged var telephone: String
     @NSManaged var profile: String
+    var category: MainCategory = .contact
     
     convenience init(_ managedContext: NSManagedObjectContext) {
         self.init(context: managedContext)
@@ -15,7 +15,7 @@ final class Contact: ResumeField {
         self.profile = ""
     }
     
-    override var valuesToDisplay: [String] {
+    var valuesToDisplay: [String] {
         let email = !email.isEmpty ? email : "Email"
         let telephone = !telephone.isEmpty ? telephone : "Telephone"
         let profile = !profile.isEmpty ? profile : "Profile URL"
@@ -23,7 +23,7 @@ final class Contact: ResumeField {
         return [email, telephone, profile]
     }
     
-    override var isFilled: Bool {
+    var isFilled: Bool {
         !(email.isEmpty && telephone.isEmpty && profile.isEmpty)
     }
 }

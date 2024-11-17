@@ -3,20 +3,27 @@ import SwiftUI
 struct SinglelineObjectsView<AddingView: View>: View {
     @EnvironmentObject var store: MainCoordinatorStore
     @Environment(\.managedObjectContext) var context
-    let nextStep: MainCoordinatorFlow
-    let additionView: (SinglelineObject?) -> AddingView
-    @FetchRequest<SinglelineObject>(sortDescriptors: [])
-    var objects: FetchedResults<SinglelineObject>
+    
     @State var presentAdditionSheet = false
     @State var editingObject: SinglelineObject?
-    let list: ListSinglelineObject
+    
+    var fetchRequest: FetchRequest<SinglelineObject>
+    var objects: FetchedResults<SinglelineObject> {
+        fetchRequest.wrappedValue
+    }
+    
     let title: String
+    let nextStep: MainCoordinatorFlow
+    let additionView: (SinglelineObject?) -> AddingView
     
     init(_ title: String, list: ListSinglelineObject, nextStep: MainCoordinatorFlow, additionView: @escaping (SinglelineObject?) -> AddingView) {
         self.title = title
-        self.list = list
         self.nextStep = nextStep
         self.additionView = additionView
+        
+        fetchRequest = FetchRequest<SinglelineObject>(entity: SinglelineObject.entity(),
+                                                     sortDescriptors: [NSSortDescriptor(keyPath: \SinglelineObject.timestamp, ascending: false)],
+                                                     predicate: NSPredicate(format: "%K == %@", #keyPath(SinglelineObject.list), list))
     }
     
     var body: some View {
@@ -31,9 +38,6 @@ struct SinglelineObjectsView<AddingView: View>: View {
             additionView(editingObject)
                 .presentationCornerRadius(32)
                 .presentationDetents([.height(250)])
-        }
-        .onAppear {
-            _objects.wrappedValue.nsPredicate = NSPredicate(format: "list == %@", list)
         }
     }
     

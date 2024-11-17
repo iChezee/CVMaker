@@ -4,20 +4,26 @@ import CoreData
 struct MultilineObjectsView<AddingView: View>: View {
     @EnvironmentObject var store: MainCoordinatorStore
     @Environment(\.managedObjectContext) var context
-    let nextStep: MainCoordinatorFlow
-    let additionView: (MultilineObject?) -> AddingView
-    @FetchRequest<MultilineObject>(sortDescriptors: [])
-    var objects: FetchedResults<MultilineObject>
+    
     @State var presentAdditionSheet = false
     @State var editingObject: MultilineObject?
-    let list: ListMultilineObject
+    
+    var fetchRequest: FetchRequest<MultilineObject>
+    var objects: FetchedResults<MultilineObject> {
+        fetchRequest.wrappedValue
+    }
+    
     let title: String
+    let nextStep: MainCoordinatorFlow
+    let additionView: (MultilineObject?) -> AddingView
     
     init(_ title: String, list: ListMultilineObject, nextStep: MainCoordinatorFlow, additionView: @escaping (MultilineObject?) -> AddingView) {
         self.title = title
-        self.list = list
         self.nextStep = nextStep
         self.additionView = additionView
+        fetchRequest = FetchRequest<MultilineObject>(entity: MultilineObject.entity(),
+                                                sortDescriptors: [NSSortDescriptor(keyPath: \MultilineObject.timestamp, ascending: false)],
+                                                predicate: NSPredicate(format: "%K == %@", #keyPath(MultilineObject.list), list))
     }
     
     var body: some View {
@@ -32,9 +38,6 @@ struct MultilineObjectsView<AddingView: View>: View {
             additionView(editingObject)
                 .presentationCornerRadius(32)
         }
-        .onAppear {
-            _objects.wrappedValue.nsPredicate = NSPredicate(format: "list == %@", list)
-        }
     }
     
     @ViewBuilder
@@ -46,7 +49,7 @@ struct MultilineObjectsView<AddingView: View>: View {
         } else {
             ScrollView {
                 LazyVStack {
-                    ForEach(objects) { object in
+                    ForEach(objects, id: \.id) { object in
                         MultilineCellView(object) { editObject in
                             self.editingObject = editObject
                             self.presentAdditionSheet = true

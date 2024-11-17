@@ -14,6 +14,8 @@ enum MainCoordinatorFlow: Equatable {
     case languages(Resume)
     case projects(Resume)
     case hobbies(Resume)
+    case chooseTemplate(Resume)
+    case resultResume(Resume)
     case crop(Data?, (Data?) -> Void)
     case camera((Data?) -> Void)
     
@@ -24,6 +26,8 @@ enum MainCoordinatorFlow: Equatable {
         case .resumeBuilder: 2
         case .profile, .contact, .employment, .education, .skills, .software, .languages, .projects, .hobbies: 3
         case .crop, .camera: 4
+        case .chooseTemplate: 5
+        case .resultResume: 6
         }
     }
     
@@ -75,7 +79,7 @@ struct MainCoordinator: View {
         Router($navigationStore.routes) { screen in
             switch screen {
             case .main: MainView()
-            case .resumeBuilder(let resume): ResumeBuilderView(resume: resume)
+            case .resumeBuilder(let resume): ResumeBuilderView(object: resume)
             case .profile(let object): ProfileView(object)
             case .contact(let object): ContactView(object)
             case .employment(let object): MultilineObjectsView("Employment", list: object.employment, nextStep: .education(object)) { additionObject in
@@ -87,15 +91,16 @@ struct MainCoordinator: View {
             case .skills(let object): SinglelineObjectsView("Skills", list: object.skills, nextStep: .software(object)) { additionObject in
                 SinglelineAddingView("Skill", placeholder: "Skill name", list: object.skills)
             }
-            case .software(let object): SinglelineObjectsView("Software", list: object.software, nextStep: .software(object)) { additionObject in
+            case .software(let object): SinglelineObjectsView("Software", list: object.software, nextStep: .languages(object)) { additionObject in
                 SinglelineAddingView("Software", placeholder: "Software name", list: object.skills)
             }
-            case .languages(let object): SinglelineObjectsView("Languages", list: object.skills, nextStep: .software(object)) { additionObject in
+            case .languages(let object): SinglelineObjectsView("Languages", list: object.skills, nextStep: .projects(object)) { additionObject in
                 SinglelineAddingView("Languages", placeholder: "Languages name", list: object.skills)
             }
-            case .projects(let object): MultilineObjectsView("Education", list: object.education, nextStep: .skills(object)) { additionObject in
-                ProjectsAddingView(additionObject, list: object.education)
+            case .projects(let object): MultilineObjectsView("Projects", list: object.education, nextStep: .hobbies(object)) { additionObject in
+                ProjectsAddingView(additionObject, list: object.project)
             }
+            case .hobbies(let object): HobbiesListView(object.hobbies)
             case .crop(let data, let completion): try? CropView(resultImage: data, completion: completion)
             case .camera(let completion): CameraView(completion: completion)
             default: EmptyView()

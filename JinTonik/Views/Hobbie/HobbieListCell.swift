@@ -1,8 +1,9 @@
 import SwiftUI
 
-struct SinglelineCellView: View {
+struct HobbieListCell: View {
     @EnvironmentObject var container: PersistenceContainer
     @Environment(\.managedObjectContext) var context
+    
     let object: SinglelineObject
     let editObject: (SinglelineObject) -> Void
     @State var deleteObjectAlert = false
@@ -13,28 +14,22 @@ struct SinglelineCellView: View {
     }
     
     var body: some View {
-        VStack {
+        VStack(alignment: .leading) {
             HStack {
-                Text(object.name.isEmpty ? " " : object.name)
-                    .regular(16)
+                Ellipse()
+                    .foregroundStyle(.accentYellow)
+                    .frame(width: 10, height: 10)
+                Text(object.name)
+                    .medium(16)
                 Spacer()
                 buttonsStack
             }
-            .padding(.leading, 30)
-            .padding(.trailing, 10)
-            HStack {
-                ForEach(0..<5) { mark in
-                    Circle()
-                        .frame(width: 24, height: 24)
-                        .foregroundStyle(mark <= Int(object.mark) ?? 0 ? .accentYellow : .subGrey)
-                    if mark < 4 {
-                        Spacer()
-                    }
-                }
-            }
-            .padding(.horizontal, 40)
+            Text(object.mark)
+                .regular(14)
+                .padding(.leading, 18)
         }
         .padding(.vertical, 20)
+        .padding(.horizontal, 16)
         .overlay {
             RoundedRectangle(cornerRadius: 16)
                 .stroke(lineWidth: 1)
@@ -74,17 +69,4 @@ struct SinglelineCellView: View {
             .frame(width: 24, height: 24)
         }
     }
-}
-
-#Preview {
-    let context = PersistenceContainer(inMemory: true).viewContext
-    let object = {
-        let object = SinglelineObject(context: context)
-        object.name = "Some skill"
-        object.mark = "3"
-        try? context.save()
-        return object
-    }()
-    
-    SinglelineCellView(object) { _ in }
 }

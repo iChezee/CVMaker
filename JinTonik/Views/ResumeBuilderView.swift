@@ -3,14 +3,15 @@ import SwiftUI
 struct ResumeBuilderView: View {
     @EnvironmentObject var coordinator: MainCoordinatorStore
     @State var selectedCategory: MainCategory?
-    let resume: Resume
+    @State var object: Resume
+    
     let grid = [GridItem(), GridItem()]
     
     var body: some View {
         ScrollView {
             LazyVGrid(columns: grid) {
-                ForEach(resume.allFields) { field in
-                    MainInfoCell(resumeField: field)
+                ForEach(object.allFields, id: \.id) { field in
+                    MainInfoCell(field: field)
                         .onTapGesture {
                             navigate(to: field.category)
                         }
@@ -45,33 +46,26 @@ struct ResumeBuilderView: View {
         let flow: MainCoordinatorFlow
         switch category {
         case .profile:
-            coordinator.navigateToProfile(resume)
+            coordinator.navigateToProfile(object)
             return
         case .contact:
-            flow = .contact(resume)
+            flow = .contact(object)
         case .employment:
-            flow = .employment(resume)
+            flow = .employment(object)
         case .education:
-            flow = .education(resume)
+            flow = .education(object)
         case .skills:
-            flow = .skills(resume)
+            flow = .skills(object)
         case .software:
-            flow = .software(resume)
+            flow = .software(object)
         case .project:
-            flow = .projects(resume)
+            flow = .projects(object)
         case .language:
-            flow = .languages(resume)
+            flow = .languages(object)
         case .hobbie:
-            flow = .hobbies(resume)
+            flow = .hobbies(object)
         }
         
         coordinator.routes.push(flow)
-    }
-}
-
-#Preview {
-    let resume = Resume()
-    NavigationView {
-        ResumeBuilderView(resume: resume)
     }
 }

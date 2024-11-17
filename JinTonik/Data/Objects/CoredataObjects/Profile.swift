@@ -1,13 +1,13 @@
 import CoreData
 
-final class Profile: ResumeField {
-    override class var keyPath: String { "profile" }
+final class Profile: NSManagedObject, ResumeField {
     @NSManaged var resume: Resume
     @NSManaged var name: String
     @NSManaged var jobTitle: String
     @NSManaged var location: String
     @NSManaged var imageData: Data?
     @NSManaged var about: String
+    var category: MainCategory = .profile
     
     convenience init(resume: Resume, _ managedContext: NSManagedObjectContext) {
         self.init(context: managedContext)
@@ -18,7 +18,7 @@ final class Profile: ResumeField {
         self.about = ""
     }
     
-    override var valuesToDisplay: [String] {
+    var valuesToDisplay: [String] {
         let name = name.isEmpty ? "Name" : name
         let jobtitle = jobTitle.isEmpty ? "Job title" : jobTitle
         let location = location.isEmpty ? "Location" : location
@@ -26,7 +26,7 @@ final class Profile: ResumeField {
         return [name, jobtitle, location]
     }
     
-    override var isFilled: Bool {
+    var isFilled: Bool {
         !(name.isEmpty && jobTitle.isEmpty && location.isEmpty)
     }
 }

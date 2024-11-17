@@ -7,8 +7,6 @@ struct ResumeListView: View {
     @FetchRequest<Resume>(sortDescriptors: [NSSortDescriptor(keyPath: \Resume.timestamp, ascending: false)])
     var objects: FetchedResults<Resume>
     
-    @State var newResume: Resume?
-    
     @State var resumeToDelete: Resume?
     @State var deleteResumeAlert = false
     
@@ -36,6 +34,8 @@ struct ResumeListView: View {
             EmptyStateView(title: "No CV History Yet")
             Button {
                 let newResume = Resume(context)
+                context.insert(newResume)
+                container.saveChanges()
                 coordinator.navigateToBuilder(newResume)
             } label: {
                 ZStack {
@@ -146,8 +146,4 @@ struct ResumeListView: View {
             }
         }
     }
-}
-
-#Preview {
-    ResumeListView()
 }

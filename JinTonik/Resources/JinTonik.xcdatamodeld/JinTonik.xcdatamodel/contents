@@ -6,26 +6,15 @@
         <attribute name="telephone" attributeType="String"/>
         <relationship name="resume" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Resume" inverseName="contact" inverseEntity="Resume"/>
     </entity>
-    <entity name="EducationList" representedClassName=".EducationList" syncable="YES">
-        <relationship name="objects" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="MultilineObject"/>
-        <relationship name="resume" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Resume" inverseName="education" inverseEntity="Resume"/>
+    <entity name="ListMultilineObject" representedClassName=".ListMultilineObject" syncable="YES">
+        <attribute name="categoryName" optional="YES" attributeType="String"/>
+        <relationship name="objects" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="MultilineObject" inverseName="list" inverseEntity="MultilineObject"/>
+        <relationship name="resume" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Resume"/>
     </entity>
-    <entity name="EmploymentList" representedClassName=".EmploymentList" syncable="YES">
-        <relationship name="objects" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="MultilineObject"/>
-        <relationship name="resume" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Resume" inverseName="employment" inverseEntity="Resume"/>
-    </entity>
-    <entity name="Hobbie" representedClassName=".Hobbie" syncable="YES">
-        <attribute name="about" optional="YES" attributeType="String"/>
-        <attribute name="title" optional="YES" attributeType="String"/>
-        <relationship name="list" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="HobbieList" inverseName="objects" inverseEntity="HobbieList"/>
-    </entity>
-    <entity name="HobbieList" representedClassName=".HobbieList" syncable="YES">
-        <relationship name="objects" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Hobbie" inverseName="list" inverseEntity="Hobbie"/>
-        <relationship name="resume" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Resume" inverseName="hobbies" inverseEntity="Resume"/>
-    </entity>
-    <entity name="LanguageList" representedClassName=".LanguageList" syncable="YES">
-        <relationship name="objects" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="SinglelineObject"/>
-        <relationship name="resume" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Resume" inverseName="language" inverseEntity="Resume"/>
+    <entity name="ListSinglelineObject" representedClassName=".ListSinglelineObject" syncable="YES">
+        <attribute name="categoryName" optional="YES" attributeType="String"/>
+        <relationship name="objects" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="SinglelineObject" inverseName="list" inverseEntity="SinglelineObject"/>
+        <relationship name="resume" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Resume"/>
     </entity>
     <entity name="MultilineObject" representedClassName=".MultilineObject" syncable="YES">
         <attribute name="about" optional="YES" attributeType="String"/>
@@ -33,7 +22,9 @@
         <attribute name="period" optional="YES" attributeType="String"/>
         <attribute name="present" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="specialisation" optional="YES" attributeType="String"/>
+        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="title" optional="YES" attributeType="String"/>
+        <relationship name="list" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ListMultilineObject" inverseName="objects" inverseEntity="ListMultilineObject"/>
     </entity>
     <entity name="Profile" representedClassName=".Profile" syncable="YES">
         <attribute name="about" optional="YES" attributeType="String"/>
@@ -43,32 +34,22 @@
         <attribute name="name" attributeType="String"/>
         <relationship name="resume" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Resume" inverseName="profile" inverseEntity="Resume"/>
     </entity>
-    <entity name="ProjectList" representedClassName=".ProjectList" syncable="YES">
-        <relationship name="objects" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="MultilineObject"/>
-        <relationship name="resume" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Resume" inverseName="project" inverseEntity="Resume"/>
-    </entity>
     <entity name="Resume" representedClassName=".Resume" syncable="YES">
         <attribute name="timestamp" attributeType="Date" usesScalarValueType="NO"/>
         <relationship name="contact" maxCount="1" deletionRule="Cascade" destinationEntity="Contact" inverseName="resume" inverseEntity="Contact"/>
-        <relationship name="education" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="EducationList" inverseName="resume" inverseEntity="EducationList"/>
-        <relationship name="employment" maxCount="1" deletionRule="Cascade" destinationEntity="EmploymentList" inverseName="resume" inverseEntity="EmploymentList"/>
-        <relationship name="hobbies" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="HobbieList" inverseName="resume" inverseEntity="HobbieList"/>
-        <relationship name="language" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LanguageList" inverseName="resume" inverseEntity="LanguageList"/>
+        <relationship name="education" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ListMultilineObject"/>
+        <relationship name="employment" maxCount="1" deletionRule="Cascade" destinationEntity="ListMultilineObject"/>
+        <relationship name="hobbies" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ListSinglelineObject"/>
+        <relationship name="language" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ListSinglelineObject"/>
         <relationship name="profile" maxCount="1" deletionRule="Cascade" destinationEntity="Profile" inverseName="resume" inverseEntity="Profile"/>
-        <relationship name="project" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="ProjectList" inverseName="resume" inverseEntity="ProjectList"/>
-        <relationship name="skills" maxCount="1" deletionRule="Cascade" destinationEntity="SkillsList" inverseName="resume" inverseEntity="SkillsList"/>
-        <relationship name="software" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SoftwareList" inverseName="resume" inverseEntity="SoftwareList"/>
+        <relationship name="project" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="ListMultilineObject"/>
+        <relationship name="skills" maxCount="1" deletionRule="Cascade" destinationEntity="ListSinglelineObject"/>
+        <relationship name="software" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ListSinglelineObject"/>
     </entity>
     <entity name="SinglelineObject" representedClassName=".SinglelineObject" syncable="YES">
         <attribute name="mark" attributeType="String"/>
         <attribute name="name" attributeType="String"/>
-    </entity>
-    <entity name="SkillsList" representedClassName=".SkillsList" syncable="YES">
-        <relationship name="objects" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="SinglelineObject"/>
-        <relationship name="resume" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Resume" inverseName="skills" inverseEntity="Resume"/>
-    </entity>
-    <entity name="SoftwareList" representedClassName=".SoftwareList" syncable="YES">
-        <relationship name="objects" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="SinglelineObject"/>
-        <relationship name="resume" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Resume" inverseName="software" inverseEntity="Resume"/>
+        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="list" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ListSinglelineObject" inverseName="objects" inverseEntity="ListSinglelineObject"/>
     </entity>
 </model>

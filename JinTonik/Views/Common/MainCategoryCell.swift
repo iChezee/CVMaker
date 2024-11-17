@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct MainInfoCell: View {
-    let resumeField: ResumeField
+    @State var field: any ResumeField
     
     var body: some View {
         ZStack(alignment: .top) {
@@ -10,24 +10,24 @@ struct MainInfoCell: View {
                 HStack {
                     ZStack {
                         Color.white
-                        resumeField.category.image
+                        field.category.image
                             .resizable()
                             .frame(width: 32, height: 32)
                     }
                     .frame(width: 52, height: 52)
                     .clipShape(.circle)
                     Spacer()
-                    Image(resumeField.isFilled ? .filled : .notFilled)
+                    Image(field.isFilled ? .filled : .notFilled)
                         .resizable()
                         .frame(width: 16, height: 16)
                 }
                 
                 VStack(alignment: .leading) {
-                    Text(resumeField.category.title)
+                    Text(field.category.title)
                         .semibold(20)
                         .foregroundStyle(.white)
                     
-                    ForEach(resumeField.valuesToDisplay, id: \.self) { value in
+                    ForEach(field.valuesToDisplay, id: \.self) { value in
                         HStack {
                             Image(.lineEllipse)
                             Text(value)
@@ -45,10 +45,4 @@ struct MainInfoCell: View {
         .frame(height: 194)
         .clipShape(RoundedRectangle(cornerRadius: 24))
     }
-}
-
-
-#Preview {
-    let profile = Profile()
-    MainInfoCell(resumeField: profile)
 }
